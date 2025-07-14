@@ -31,10 +31,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/appUser/login",
                                 "/appUser/registro",
-                                "/appUser/logout"
-//                                "/v3/api-docs/**",
-//                                "/swagger-ui/**",
-//                                "/swagger-ui.html"
+                                "/appUser/logout",
+                               "/v3/api-docs/**",
+                               "/swagger-ui/**",
+                               "/swagger-ui.html",
+                                "/crm_db.html",
+                                "/"
 
                         ).permitAll()
                         .anyRequest().authenticated()
