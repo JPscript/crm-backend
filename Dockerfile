@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 
 # Usar Maven Wrapper si tienes mvnw, si no, usa 'mvn'
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # 2. Imagen final para correr la app
 FROM eclipse-temurin:21-jre
