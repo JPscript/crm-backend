@@ -54,9 +54,9 @@ public class SecurityConfig {
               ).permitAll()
               // c) El resto solo con JWT válido
               .anyRequest().authenticated()
-          )
-          // 5) Insertamos tu filtro JWT justo después de que se decida permitAll vs authenticated
-          .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+          ); // <- Cierra el bloque de authorizeHttpRequests
+          // 5) Filtro JWT desactivado temporalmente para depuración
+          // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

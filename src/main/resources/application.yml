@@ -22,9 +22,14 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+  security:
+    debug: true
 jwt:
   secret: MyCookieJar123
 springdoc:
   swagger-ui:
     path: /crm_db.html
     operationsSorter: method
+logging:
+  level:
+    org.springframework.security: DEBUG
