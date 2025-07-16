@@ -10,10 +10,10 @@ import org.ediae.tfm.crmapi.service.iAppUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,48 +30,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private iAppUserService appUserService;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        boolean skip = path.startsWith("/appUser/login")
-            || path.startsWith("/appUser/registro")
-            || path.startsWith("/v3/api-docs")
-            || path.startsWith("/swagger-ui")
-            || path.equals("/swagger-ui.html")
-            || path.equals("/crm_db.html")
-            || path.equals("/");
-        logger.info("[JwtAuthFilter] shouldNotFilter? {} for path: {}", skip, path);
-        return skip;
-    }
-
-    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = extractJwtFromCookies(request);
-        if (token != null && jwtService.validateToken(token)) {
-            String email = jwtService.extractUsername(token);
-            try {
+        // 1) Leemos el header Authorization
+        String header = request.getHeader("Authorization");
+
+        // 2) Si no viene, delegamos SIN bloquear
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 3) Si viene, extraemos y validamos
+        String token = header.substring(7);
+        try {
+            if (jwtService.validateToken(token)) {
+                String email = jwtService.extractUsername(token);
                 AppUser appUser = appUserService.findAppUserByEmail(email);
                 UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(appUser, null, List.of());
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (GeneralException e) {
-                logger.warn("[JwtAuthFilter] Failed to find user by email: {}", e.getMessage());
             }
+        } catch (GeneralException | RuntimeException e) {
+            // token inválido o usuario no existe → recogemos, pero NO bloqueamos
+            logger.warn("[JwtAuthFilter] No se pudo autenticar con el token: {}", e.getMessage());
         }
-        filterChain.doFilter(request, response);
-    }
 
-    private String extractJwtFromCookies(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            for (var cookie : request.getCookies()) {
-                if ("jwt".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
+        // 4) Continuamos con la cadena de filtros
+        filterChain.doFilter(request, response);
     }
 }
