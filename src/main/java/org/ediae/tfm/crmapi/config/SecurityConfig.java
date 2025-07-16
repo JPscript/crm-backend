@@ -44,6 +44,7 @@ public class SecurityConfig {
           .authorizeHttpRequests(auth -> auth
               // a) Permitimos preflight y POST a /appUser/registro
               .requestMatchers(HttpMethod.OPTIONS, "/appUser/registro").permitAll()
+              .requestMatchers(HttpMethod.GET,   "/appUser/registro").permitAll()
               .requestMatchers(HttpMethod.POST,   "/appUser/registro").permitAll()
               // b) También login y Swagger UI
               .requestMatchers(
@@ -54,9 +55,9 @@ public class SecurityConfig {
               ).permitAll()
               // c) El resto solo con JWT válido
               .anyRequest().authenticated()
-          ); // <- Cierra el bloque de authorizeHttpRequests
+          ) // <- Cierra el bloque de authorizeHttpRequests
           // 5) Filtro JWT desactivado temporalmente para depuración
-          // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+          .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
