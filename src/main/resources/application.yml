@@ -1,6 +1,12 @@
 server:
   port: 8080
 #  parametrizar puerto
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-exception: true
+    include-stacktrace: always
+#  parametrizar puerto
 spring:
   main:
     allow-circular-references: true

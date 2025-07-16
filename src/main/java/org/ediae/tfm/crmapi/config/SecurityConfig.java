@@ -53,6 +53,7 @@ public class SecurityConfig {
                   "/swagger-ui/**",
                   "/swagger-ui.html"
               ).permitAll()
+              .requestMatchers("/error").permitAll()
               // c) El resto solo con JWT válido
               .anyRequest().authenticated()
           ) // <- Cierra el bloque de authorizeHttpRequests
