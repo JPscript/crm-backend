@@ -136,10 +136,10 @@ public class AppUserController {
             String token = jwtService.generateToken(appUser);
             ResponseCookie cookie = ResponseCookie.from("jwt", token)
                     .httpOnly(true)
-                    .secure(false) // set to true when using HTTPS
+                    .secure(true) // set to true when using HTTPS
                     .path("/")
                     .maxAge(86400)
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
