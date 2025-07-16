@@ -39,6 +39,9 @@ public class SecurityConfig {
                                 "/"
 
                         ).permitAll()
+                        // Permitimos explícitamente POST y OPTIONS en /appUser/registro
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/appUser/registro").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/appUser/registro").permitAll()
                         .anyRequest().authenticated()
                 )
                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
