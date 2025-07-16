@@ -4,6 +4,7 @@ import org.ediae.tfm.crmapi.constant.GeneralConstants;
 import org.ediae.tfm.crmapi.entity.AppUser;
 import org.ediae.tfm.crmapi.entity.Role;
 import org.ediae.tfm.crmapi.exception.GeneralException;
+import org.ediae.tfm.crmapi.exception.GeneralExceptionRegister;
 import org.ediae.tfm.crmapi.repository.AppUserRepository;
 import org.ediae.tfm.crmapi.repository.RoleRepository;
 import org.ediae.tfm.crmapi.service.iAppUserService;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 public class AppUserServiceImpl implements iAppUserService {
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AppUserServiceImpl.class);
 
     @Autowired
     RoleRepository roleRepository;
@@ -58,9 +60,10 @@ public class AppUserServiceImpl implements iAppUserService {
             return appUserRepository.save(appUser);
 
         } catch (Exception ex) {
-            throw new GeneralException(
+            logger.error("Error registrando usuario", ex);
+            throw new GeneralExceptionRegister(
                     GeneralConstants.GENERAL_ERROR_CODE,
-                    GeneralConstants.GENERAL_ERROR_MESSAGE);
+                    GeneralConstants.GENERAL_ERROR_MESSAGE, ex);
         }
     }
 
